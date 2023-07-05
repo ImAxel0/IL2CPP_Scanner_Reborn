@@ -1,0 +1,328 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Il2cpp resolver">
+      <UniqueIdentifier>{2e2ec0d3-a055-448b-a29b-e6e3944cfa62}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Imgui">
+      <UniqueIdentifier>{6220dba8-d382-4357-aa45-21faff91b6b3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Kiero">
+      <UniqueIdentifier>{23f51f99-8d35-4145-b166-a48cb73d5e0b}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="globals.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="il2cppresolver\Cache.hpp">
+      <Filter>Il2cpp resolver</Filter>
+    </ClInclude>
+    <ClInclude Include="il2cppresolver\Functions\Callback.hpp">
+      <Filter>Il2cpp resolver</Filter>
+    </ClInclude>
+    <ClInclude Include="il2cppresolver\Unity\API\Camera.hpp">
+      <Filter>Il2cpp resolver</Filter>
+    </ClInclude>
+    <ClInclude Include="il2cppresolver\Functions\Class.hpp">
+      <Filter>Il2cpp resolver</Filter>
+    </ClInclude>
+    <ClInclude Include="il2cppresolver\Unity\API\Component.hpp">
+      <Filter>Il2cpp resolver</Filter>
+    </ClInclude>
+    <ClInclude Include="il2cppresolver\Data.hpp">
+      <Filter>Il2cpp resolver</Filter>
+    </ClInclude>
+    <ClInclude Include="il2cppresolver\Defines.hpp">
+      <Filter>Il2cpp resolver</Filter>
+    </ClInclude>
+    <ClInclude Include="il2cppresolver\Unity\Defines.hpp">
+      <Filter>Il2cpp resolver</Filter>
+    </ClInclude>
+    <ClInclude Include="il2cppresolver\Functions\Domain.hpp">
+      <Filter>Il2cpp resolver</Filter>
+    </ClInclude>
+    <ClInclude Include="il2cppresolver\Unity\API\GameObject.hpp">
+      <Filter>Il2cpp resolver</Filter>
+    </ClInclude>
+    <ClInclude Include="il2cppresolver\Unity\Structures\il2cpp.hpp">
+      <Filter>Il2cpp resolver</Filter>
+    </ClInclude>
+    <ClInclude Include="il2cppresolver\Unity\Structures\il2cppArray.hpp">
+      <Filter>Il2cpp resolver</Filter>
+    </ClInclude>
+    <ClInclude Include="il2cppresolver\Unity\Structures\il2cppDictionary.hpp">
+      <Filter>Il2cpp resolver</Filter>
+    </ClInclude>
+    <ClInclude Include="il2cppresolver\Il2CppResolver.hpp">
+      <Filter>Il2cpp resolver</Filter>
+    </ClInclude>
+    <ClInclude Include="il2cppresolver\Includes.hpp">
+      <Filter>Il2cpp resolver</Filter>
+    </ClInclude>
+    <ClInclude Include="il2cppresolver\Unity\Structures\Includes.hpp">
+      <Filter>Il2cpp resolver</Filter>
+    </ClInclude>
+    <ClInclude Include="il2cppresolver\Unity\Includes.hpp">
+      <Filter>Il2cpp resolver</Filter>
+    </ClInclude>
+    <ClInclude Include="il2cppresolver\Utils\Joaat.hpp">
+      <Filter>Il2cpp resolver</Filter>
+    </ClInclude>
+    <ClInclude Include="il2cppresolver\Unity\Obfuscators.hpp">
+      <Filter>Il2cpp resolver</Filter>
+    </ClInclude>
+    <ClInclude Include="il2cppresolver\Unity\API\Object.hpp">
+      <Filter>Il2cpp resolver</Filter>
+    </ClInclude>
+    <ClInclude Include="il2cppresolver\Functions\ResolveCall.hpp">
+      <Filter>Il2cpp resolver</Filter>
+    </ClInclude>
+    <ClInclude Include="il2cppresolver\Unity\API\Rigidbody.hpp">
+      <Filter>Il2cpp resolver</Filter>
+    </ClInclude>
+    <ClInclude Include="il2cppresolver\Functions\String.hpp">
+      <Filter>Il2cpp resolver</Filter>
+    </ClInclude>
+    <ClInclude Include="il2cppresolver\Unity\Structures\System_String.hpp">
+      <Filter>Il2cpp resolver</Filter>
+    </ClInclude>
+    <ClInclude Include="il2cppresolver\Unity\API\Transform.hpp">
+      <Filter>Il2cpp resolver</Filter>
+    </ClInclude>
+    <ClInclude Include="il2cppresolver\Utils\VFunc.hpp">
+      <Filter>Il2cpp resolver</Filter>
+    </ClInclude>
+    <ClInclude Include="il2cppresolver\Functions\Thread.hpp">
+      <Filter>Il2cpp resolver</Filter>
+    </ClInclude>
+    <ClInclude Include="il2cppresolver\Unity\API\LayerMask.hpp">
+      <Filter>Il2cpp resolver</Filter>
+    </ClInclude>
+    <ClInclude Include="il2cppresolver\Unity\API\_TEMPLATE_API.hpp">
+      <Filter>Il2cpp resolver</Filter>
+    </ClInclude>
+    <ClInclude Include="il2cppresolver\Unity\Structures\Engine.hpp">
+      <Filter>Il2cpp resolver</Filter>
+    </ClInclude>
+    <ClInclude Include="il2cppresolver\Utils\Helper.hpp">
+      <Filter>Il2cpp resolver</Filter>
+    </ClInclude>
+    <ClInclude Include="imgui\imconfig.h">
+      <Filter>Imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="imgui\imgui.h">
+      <Filter>Imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="imgui\imgui_impl_dx11.h">
+      <Filter>Imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="imgui\imgui_impl_win32.h">
+      <Filter>Imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="imgui\imgui_internal.h">
+      <Filter>Imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="imgui\imgui_stdlib.h">
+      <Filter>Imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="imgui\imstb_rectpack.h">
+      <Filter>Imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="imgui\imstb_textedit.h">
+      <Filter>Imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="imgui\imstb_truetype.h">
+      <Filter>Imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="kiero\minhook\src\buffer.h">
+      <Filter>Kiero</Filter>
+    </ClInclude>
+    <ClInclude Include="kiero\minhook\src\hde\hde32.h">
+      <Filter>Kiero</Filter>
+    </ClInclude>
+    <ClInclude Include="kiero\minhook\src\hde\hde64.h">
+      <Filter>Kiero</Filter>
+    </ClInclude>
+    <ClInclude Include="kiero\kiero.h">
+      <Filter>Kiero</Filter>
+    </ClInclude>
+    <ClInclude Include="kiero\minhook\include\MinHook.h">
+      <Filter>Kiero</Filter>
+    </ClInclude>
+    <ClInclude Include="kiero\minhook\src\hde\pstdint.h">
+      <Filter>Kiero</Filter>
+    </ClInclude>
+    <ClInclude Include="kiero\minhook\src\hde\table32.h">
+      <Filter>Kiero</Filter>
+    </ClInclude>
+    <ClInclude Include="kiero\minhook\src\hde\table64.h">
+      <Filter>Kiero</Filter>
+    </ClInclude>
+    <ClInclude Include="kiero\minhook\src\trampoline.h">
+      <Filter>Kiero</Filter>
+    </ClInclude>
+    <ClInclude Include="gui.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GameObject.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Search.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Component.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Field.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="font.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Logger.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Methods.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Property.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="iconfont.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Child.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="dllmain.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="hKPresent.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="il2cppresolver\Unity\API\_TEMPLATE_API.cpp">
+      <Filter>Il2cpp resolver</Filter>
+    </ClCompile>
+    <ClCompile Include="il2cppresolver\Unity\API\GameObject.cpp">
+      <Filter>Il2cpp resolver</Filter>
+    </ClCompile>
+    <ClCompile Include="il2cppresolver\Cache.cpp">
+      <Filter>Il2cpp resolver</Filter>
+    </ClCompile>
+    <ClCompile Include="il2cppresolver\Functions\Callback.cpp">
+      <Filter>Il2cpp resolver</Filter>
+    </ClCompile>
+    <ClCompile Include="il2cppresolver\Unity\API\Camera.cpp">
+      <Filter>Il2cpp resolver</Filter>
+    </ClCompile>
+    <ClCompile Include="il2cppresolver\Functions\Class.cpp">
+      <Filter>Il2cpp resolver</Filter>
+    </ClCompile>
+    <ClCompile Include="il2cppresolver\Unity\API\Component.cpp">
+      <Filter>Il2cpp resolver</Filter>
+    </ClCompile>
+    <ClCompile Include="il2cppresolver\Data.cpp">
+      <Filter>Il2cpp resolver</Filter>
+    </ClCompile>
+    <ClCompile Include="il2cppresolver\Utils\Helper.cpp">
+      <Filter>Il2cpp resolver</Filter>
+    </ClCompile>
+    <ClCompile Include="il2cppresolver\Il2CppResolver.cpp">
+      <Filter>Il2cpp resolver</Filter>
+    </ClCompile>
+    <ClCompile Include="il2cppresolver\Unity\API\LayerMask.cpp">
+      <Filter>Il2cpp resolver</Filter>
+    </ClCompile>
+    <ClCompile Include="il2cppresolver\Unity\Obfuscators.cpp">
+      <Filter>Il2cpp resolver</Filter>
+    </ClCompile>
+    <ClCompile Include="il2cppresolver\Unity\API\Object.cpp">
+      <Filter>Il2cpp resolver</Filter>
+    </ClCompile>
+    <ClCompile Include="il2cppresolver\Unity\API\Rigidbody.cpp">
+      <Filter>Il2cpp resolver</Filter>
+    </ClCompile>
+    <ClCompile Include="il2cppresolver\Functions\String.cpp">
+      <Filter>Il2cpp resolver</Filter>
+    </ClCompile>
+    <ClCompile Include="il2cppresolver\Functions\Thread.cpp">
+      <Filter>Il2cpp resolver</Filter>
+    </ClCompile>
+    <ClCompile Include="il2cppresolver\Unity\API\Transform.cpp">
+      <Filter>Il2cpp resolver</Filter>
+    </ClCompile>
+    <ClCompile Include="kiero\minhook\src\buffer.c">
+      <Filter>Kiero</Filter>
+    </ClCompile>
+    <ClCompile Include="kiero\minhook\src\hde\hde32.c">
+      <Filter>Kiero</Filter>
+    </ClCompile>
+    <ClCompile Include="kiero\minhook\src\hde\hde64.c">
+      <Filter>Kiero</Filter>
+    </ClCompile>
+    <ClCompile Include="kiero\minhook\src\hook.c">
+      <Filter>Kiero</Filter>
+    </ClCompile>
+    <ClCompile Include="kiero\kiero.cpp">
+      <Filter>Kiero</Filter>
+    </ClCompile>
+    <ClCompile Include="kiero\minhook\src\trampoline.c">
+      <Filter>Kiero</Filter>
+    </ClCompile>
+    <ClCompile Include="imgui\imgui.cpp">
+      <Filter>Imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="imgui\imgui_demo.cpp">
+      <Filter>Imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="imgui\imgui_draw.cpp">
+      <Filter>Imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="imgui\imgui_impl_dx11.cpp">
+      <Filter>Imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="imgui\imgui_impl_win32.cpp">
+      <Filter>Imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="imgui\imgui_stdlib.cpp">
+      <Filter>Imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="imgui\imgui_tables.cpp">
+      <Filter>Imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="imgui\imgui_widgets.cpp">
+      <Filter>Imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="gui.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Methods.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="kiero\minhook\dll_resources\MinHook.rc">
+      <Filter>Resource Files</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="kiero\minhook\dll_resources\MinHook.def">
+      <Filter>Kiero</Filter>
+    </None>
+  </ItemGroup>
+</Project>
