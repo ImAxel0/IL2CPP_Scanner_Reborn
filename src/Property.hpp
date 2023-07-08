@@ -26,8 +26,13 @@ public:
 		return m_Property;
 	}
 
-	static inline void Set(il2cppPropertyInfo* property)
+	static inline void Set(il2cppPropertyInfo* prop)
 	{
-		m_Property = ComponentClass::Get()->GetPropertyValue<CObject*>(property->m_pName);
+		m_Property = ComponentClass::Get()->GetPropertyValue<CObject*>(prop->m_pName);
+	}
+
+	static inline void ClearAll()
+	{
+		m_Properties.clear();
 	}
 };

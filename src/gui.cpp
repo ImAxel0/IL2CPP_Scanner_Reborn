@@ -138,7 +138,7 @@ void GUI()
 	for (auto GameObject : GameObjectClass::Gets())
 	{
 		if (!GameObjectClass::IsValidGameObject(GameObject))
-			break;
+			continue;
 
 		if (ImGui::Button(GameObject->GetName()->ToString().c_str(), ImVec2(ImGui::GetContentRegionAvail().x, NULL)))
 		{
@@ -210,6 +210,12 @@ void GUI()
 			Globals::Gui::style->Colors[ImGuiCol_Text] = ImColor(0, 255, 0);
 			std::string name = ComponentClass::Get()->m_Object.m_pClass->m_pName;
 			name.append(" fields and properties");
+
+			if (ComponentClass::Get()->m_Object.m_pClass->m_pTypeDefinition)
+			{
+				il2cppClass* baseClass = (il2cppClass*)ComponentClass::Get()->m_Object.m_pClass->m_pTypeDefinition;
+				name.append(" : ").append(baseClass->m_pName);
+			}
 			TextCentered(name);
 			Globals::Gui::style->Colors[ImGuiCol_Text] = ImColor(255, 255, 255);
 		}
@@ -270,7 +276,7 @@ void GUI()
 		for (auto Component : ComponentClass::Gets())
 		{
 			if (!ComponentClass::IsValidComponent(Component))
-				break;
+				continue;
 
 			if (boost::iequals(SearchClass::m_ComponentList, Component->m_Object.m_pClass->m_pName) || SearchClass::m_ComponentList.empty())
 				if (ImGui::Button(Component->m_Object.m_pClass->m_pName, ImVec2(ImGui::GetContentRegionAvail().x, NULL)))
@@ -298,7 +304,7 @@ void GUI()
 		for (auto Component : ComponentClass::Gets())
 		{
 			if (!ComponentClass::IsValidComponent(Component))
-				break;
+				continue;
 
 			ImGui::PushID(Component);
 			if (boost::iequals(SearchClass::m_ComponentList, Component->m_Object.m_pClass->m_pName) || SearchClass::m_ComponentList.empty())
@@ -396,6 +402,9 @@ void GUI()
 
 						if (Globals::showClass)
 						{
+							if (strcmp(Field->m_pName, "_instance") == 0 || strcmp(Field->m_pName, "_Instance") == 0) // exclude the get instance field
+								break;
+
 							Globals::Gui::style->Colors[ImGuiCol_Text] = ImColor(167, 122, 221);
 							ImGui::Text("CLASS"); ImGui::SameLine();
 							Globals::Gui::style->Colors[ImGuiCol_Text] = ImColor(255, 255, 255);
@@ -420,17 +429,79 @@ void GUI()
 
 		for (auto Property : PropertyClass::Gets())
 		{
-			if (!ComponentClass::IsValidComponent(ComponentClass::Get()))
-				break;
+			if (!ComponentClass::IsValidComponent(ComponentClass::Get()) || !Property->m_pGet)
+				continue;
 
 			if (boost::iequals(SearchClass::m_FieldList, Property->m_pName) || SearchClass::m_FieldList.empty())
 			{
 				if (Globals::showProperties)
 				{
-					ImGui::Text(ICON_FA_WRENCH); ImGui::SameLine();
-					if (ImGui::Button(Property->m_pName, ImVec2(ImGui::GetContentRegionAvail().x, NULL)))
+					switch (Property->m_pGet->m_pReturnType->m_uType)
 					{
-						// properties are found but can't do anything with them?
+						case Type_Integer:
+						{
+							int i = ComponentClass::Get()->GetMemberValue<int>(Property->m_pName);
+
+							ImGui::Text(ICON_FA_WRENCH); ImGui::SameLine(); ImGui::Text("int"); ImGui::SameLine();
+							ImGui::PushItemWidth(250);
+							if (!Property->m_pSet)
+								ImGui::BeginDisabled(true);
+							if (ImGui::InputInt(Property->m_pName, &i, NULL, NULL, ImGuiInputTextFlags_EnterReturnsTrue))
+							{
+								ComponentClass::Get()->SetMemberValue<int>(Property->m_pName, i);
+							}
+							if (!Property->m_pSet)
+								ImGui::EndDisabled();
+							break;
+						}
+						
+						case Type_Float:
+						{
+							float f = ComponentClass::Get()->GetMemberValue<float>(Property->m_pName);
+
+							ImGui::Text(ICON_FA_WRENCH); ImGui::SameLine(); ImGui::Text("float"); ImGui::SameLine();
+							ImGui::PushItemWidth(250);
+							if (!Property->m_pSet)
+								ImGui::BeginDisabled(true);
+							if (ImGui::InputFloat(Property->m_pName, &f, NULL, NULL, "%.1f", ImGuiInputTextFlags_EnterReturnsTrue))
+							{
+								ComponentClass::Get()->SetMemberValue<float>(Property->m_pName, f);
+							}
+							if (!Property->m_pSet)
+								ImGui::EndDisabled();
+							break;
+						}
+
+						case Type_Boolean:
+						{
+							bool b = ComponentClass::Get()->GetMemberValue<bool>(Property->m_pName);
+
+							ImGui::Text(ICON_FA_WRENCH); ImGui::SameLine(); ImGui::Text("bool"); ImGui::SameLine();
+							if (!Property->m_pSet)
+								ImGui::BeginDisabled(true);
+							if (ImGui::Checkbox(Property->m_pName, &b))
+							{
+								(ComponentClass::Get()->GetMemberValue<bool>(Property->m_pName)) ? ComponentClass::Get()->SetMemberValue<bool>(Property->m_pName, false) : ComponentClass::Get()->SetMemberValue<bool>(Property->m_pName, true);
+							}
+							if (!Property->m_pSet)
+								ImGui::EndDisabled();
+							break;
+						}
+
+						case Type_Class:
+						{
+							ImGui::Text(ICON_FA_WRENCH); ImGui::SameLine(); ImGui::Text("class"); ImGui::SameLine();
+							if (ImGui::Button(Property->m_pName, ImVec2(ImGui::GetContentRegionAvail().x, NULL)))
+							{
+								PropertyClass::Set(Property);
+								FieldClass::PropertyFieldSearchAll();
+								PropertyClass::ClearAll();
+								MethodClass::MethodSearchAll();
+								SearchClass::m_FieldList.clear();
+								Globals::Gui::window = "field";
+							}
+							break;
+						}
 					}
 				}
 			}
@@ -456,18 +527,18 @@ void GUI()
 
 		switch (Globals::MethodArgType_Current)
 		{
-			case ArgType::inT:
-				ImGui::InputInt("Int value", &MethodArgs::MethodInt, NULL, NULL);
-				break;
-			case ArgType::floaT:
-				ImGui::InputFloat("Float value", &MethodArgs::MethodFloat, NULL, NULL, "%.1f");
-				break;
-			case ArgType::booL:
-				ImGui::Checkbox("True or False?", &MethodArgs::MethodBool);
-				break;
-			case ArgType::strinG:
-				ImGui::InputText("String", &MethodArgs::MethodString);
-				break;
+		case ArgType::inT:
+			ImGui::InputInt("Int value", &MethodArgs::MethodInt, NULL, NULL);
+			break;
+		case ArgType::floaT:
+			ImGui::InputFloat("Float value", &MethodArgs::MethodFloat, NULL, NULL, "%.1f");
+			break;
+		case ArgType::booL:
+			ImGui::Checkbox("True or False?", &MethodArgs::MethodBool);
+			break;
+		case ArgType::strinG:
+			ImGui::InputText("String", &MethodArgs::MethodString);
+			break;
 		}
 
 		if (ImGui::Button("Call Method"))
@@ -600,7 +671,7 @@ void GUI()
 		for (auto Component : ComponentClass::Gets())
 		{
 			if (!ComponentClass::IsValidComponent(Component))
-				break;
+				continue;
 
 			if (ImGui::Button(Component->m_Object.m_pClass->m_pName, ImVec2(ImGui::GetContentRegionAvail().x, NULL)))
 			{
