@@ -11,6 +11,7 @@ An in game GUI tool based on [IL2CPP_Resolver](https://github.com/sneakyevil/IL2
 - gameobject transform tweaking and inspector window
 - get children gameobjects
 - methods calling (with some limitations)
+- properties usage
 - class field type
 - more stable and easier to use (I think)
 
