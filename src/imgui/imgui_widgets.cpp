@@ -39,6 +39,7 @@ Index of this file:
 #include "imgui.h"
 #ifndef IMGUI_DISABLE
 #include "imgui_internal.h"
+#include "../globals.hpp"
 
 // System includes
 #if defined(_MSC_VER) && _MSC_VER <= 1500 // MSVC 2008 or earlier
@@ -3602,6 +3603,86 @@ bool ImGui::InputScalarN(const char* label, ImGuiDataType data_type, void* p_dat
     return value_changed;
 }
 
+bool ImGui::MyInputScalarN3(const char* label, const char* label1, const char* label2, const char* label3, ImColor color1, ImColor color2, ImColor color3, ImGuiDataType data_type, void* p_data, int components, const void* p_step, const void* p_step_fast, const char* format, ImGuiInputTextFlags flags)
+{
+    const char* labels[] = { label1, label2, label3 };
+    ImColor colors[] = { color1, color2, color3 };
+
+    ImGuiWindow* window = GetCurrentWindow();
+    if (window->SkipItems)
+        return false;
+
+    ImGuiContext& g = *GImGui;
+    bool value_changed = false;
+    BeginGroup();
+    PushID(label);
+    PushMultiItemsWidths(components, CalcItemWidth());
+    size_t type_size = GDataTypeInfo[data_type].Size;
+    for (int i = 0; i < components; i++)
+    {
+        PushID(i);
+        if (i > 0)
+            SameLine(0, g.Style.ItemInnerSpacing.x);
+        Globals::Gui::style->Colors[ImGuiCol_Text] = colors[i];
+        value_changed |= InputScalar(labels[i], data_type, p_data, p_step, p_step_fast, format, flags);   
+        Globals::Gui::style->Colors[ImGuiCol_Text] = ImColor(255, 255, 255, 230);
+        PopID();
+        PopItemWidth();
+        p_data = (void*)((char*)p_data + type_size);
+    }
+    PopID();
+
+    const char* label_end = FindRenderedTextEnd(label);
+    if (label != label_end)
+    {
+        SameLine(0.0f, g.Style.ItemInnerSpacing.x);
+        TextEx(label, label_end);
+    }
+
+    EndGroup();
+    return value_changed;
+}
+
+bool ImGui::MyInputScalarN4(const char* label, const char* label1, const char* label2, const char* label3, const char* label4, ImColor color1, ImColor color2, ImColor color3, ImColor color4, ImGuiDataType data_type, void* p_data, int components, const void* p_step, const void* p_step_fast, const char* format, ImGuiInputTextFlags flags)
+{
+    const char* labels[] = { label1, label2, label3, label4 };
+    ImColor colors[] = { color1, color2, color3, color4 };
+
+    ImGuiWindow* window = GetCurrentWindow();
+    if (window->SkipItems)
+        return false;
+
+    ImGuiContext& g = *GImGui;
+    bool value_changed = false;
+    BeginGroup();
+    PushID(label);
+    PushMultiItemsWidths(components, CalcItemWidth());
+    size_t type_size = GDataTypeInfo[data_type].Size;
+    for (int i = 0; i < components; i++)
+    {
+        PushID(i);
+        if (i > 0)
+            SameLine(0, g.Style.ItemInnerSpacing.x);
+        Globals::Gui::style->Colors[ImGuiCol_Text] = colors[i];
+        value_changed |= InputScalar(labels[i], data_type, p_data, p_step, p_step_fast, format, flags);
+        Globals::Gui::style->Colors[ImGuiCol_Text] = ImColor(255, 255, 255, 230);
+        PopID();
+        PopItemWidth();
+        p_data = (void*)((char*)p_data + type_size);
+    }
+    PopID();
+
+    const char* label_end = FindRenderedTextEnd(label);
+    if (label != label_end)
+    {
+        SameLine(0.0f, g.Style.ItemInnerSpacing.x);
+        TextEx(label, label_end);
+    }
+
+    EndGroup();
+    return value_changed;
+}
+
 bool ImGui::InputFloat(const char* label, float* v, float step, float step_fast, const char* format, ImGuiInputTextFlags flags)
 {
     flags |= ImGuiInputTextFlags_CharsScientific;
@@ -3618,9 +3699,19 @@ bool ImGui::InputFloat3(const char* label, float v[3], const char* format, ImGui
     return InputScalarN(label, ImGuiDataType_Float, v, 3, NULL, NULL, format, flags);
 }
 
+bool ImGui::MyInputFloat3(const char* label, const char* label1, const char* label2, const char* label3, ImColor color1, ImColor color2, ImColor color3, float v[3], const char* format, ImGuiInputTextFlags flags)
+{
+    return MyInputScalarN3(label, label1, label2, label3, color1, color2, color3, ImGuiDataType_Float, v, 3, NULL, NULL, format, flags);
+}
+
 bool ImGui::InputFloat4(const char* label, float v[4], const char* format, ImGuiInputTextFlags flags)
 {
     return InputScalarN(label, ImGuiDataType_Float, v, 4, NULL, NULL, format, flags);
+}
+
+bool ImGui::MyInputFloat4(const char* label, const char* label1, const char* label2, const char* label3, const char* label4, ImColor color1, ImColor color2, ImColor color3, ImColor color4, float v[4], const char* format, ImGuiInputTextFlags flags)
+{
+    return MyInputScalarN4(label, label1, label2, label3, label4, color1, color2, color3, color4, ImGuiDataType_Float, v, 4, NULL, NULL, format, flags);
 }
 
 bool ImGui::InputInt(const char* label, int* v, int step, int step_fast, ImGuiInputTextFlags flags)
