@@ -28,7 +28,5 @@ namespace Globals
 		inline Present oPresent;
 		inline ImGuiStyle* style;
 		inline std::string window = "component";
-		inline ImColor color(62, 63, 65);
-		inline ImColor* theme = &color;
 	}
 }

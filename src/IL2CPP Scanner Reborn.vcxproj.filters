@@ -207,6 +207,9 @@
     <ClInclude Include="Child.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="gui utils.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -312,6 +315,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Methods.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="gui tools.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

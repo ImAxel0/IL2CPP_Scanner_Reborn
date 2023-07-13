@@ -8,6 +8,7 @@ using namespace Unity;
 class ChildClass
 {
 	static inline std::vector<CGameObject*> m_Children;
+	static inline std::vector<CGameObject*> m_SubChildren;
 	static inline std::vector<CGameObject*> m_Parent;
 	static inline std::string m_ChildrenPath;
 
@@ -27,9 +28,29 @@ public:
 		}
 	}
 
+	static inline void SubChildrenSearchAll(CGameObject* ChildObj)
+	{
+		m_SubChildren.clear();
+
+		if (!GameObjectClass::IsValidGameObject(ChildObj))
+			return;
+
+		for (uintptr_t u{}; u < ChildObj->GetTransform()->GetChildCount(); ++u)
+		{
+			CGameObject* child = (CGameObject*)ChildObj->GetTransform()->GetChild(u);
+			CGameObject* tmp = GameObject::Find(child->GetName()->ToString().c_str());
+			(tmp) ? m_SubChildren.push_back(tmp) : m_SubChildren.push_back(child);
+		}
+	}
+
 	static inline std::vector<CGameObject*> Gets()
 	{
 		return m_Children;
+	}
+
+	static inline std::vector<CGameObject*> GetsSubChildren()
+	{
+		return m_SubChildren;
 	}
 
 	static inline void PushParent(CGameObject* ParentGameObject)

@@ -7,6 +7,7 @@
 #include "iconfont.hpp"
 #include "il2cppresolver/Il2CppResolver.hpp"
 #include "GameObject.hpp"
+#include "gui utils.hpp"
 #include <d3d11.h>
 
 extern LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
