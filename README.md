@@ -5,6 +5,8 @@
 
 An in game GUI tool based on [IL2CPP_Resolver](https://github.com/sneakyevil/IL2CPP_Resolver) made to modify il2cpp Unity games running on DX11; revisited version of my old [IL2CPP_Scanner_DX11](https://github.com/ImAxel0/IL2CPP_Scanner_DX11).
 
+Short showcase video [https://www.youtube.com/watch?v=i3jDIRIJYtc&ab_channel=AxEl](https://www.youtube.com/watch?v=i3jDIRIJYtc&ab_channel=AxEl)
+
 ![IL2CPP Scanner Reborn](https://i.imgur.com/N88MyW2.png)
 
 ### What's new?
