@@ -5,7 +5,7 @@
 
 An in game GUI tool based on [IL2CPP_Resolver](https://github.com/sneakyevil/IL2CPP_Resolver) made to modify il2cpp Unity games running on DX11; revisited version of my old [IL2CPP_Scanner_DX11](https://github.com/ImAxel0/IL2CPP_Scanner_DX11).
 
-![IL2CPP Scanner Reborn](https://i.imgur.com/YGSu2CV.png)
+![IL2CPP Scanner Reborn](https://i.imgur.com/N88MyW2.png)
 
 ### What's new?
 - gameobject transform tweaking and inspector window
