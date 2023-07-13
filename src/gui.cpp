@@ -1,4 +1,4 @@
-#include "imgui/imgui.h"
+#include "gui utils.hpp"
 #include "imgui/imgui_stdlib.h"
 #include "globals.hpp"
 #include "Search.hpp"
@@ -17,78 +17,31 @@
 
 using namespace Unity;
 
-void TextCenteredXY(std::string text) {
-	auto windowWidth = ImGui::GetContentRegionAvail().x;
-	auto textWidth = ImGui::CalcTextSize(text.c_str()).x;
-
-	auto windowHeight = ImGui::GetContentRegionAvail().y;
-	auto textHeight = ImGui::CalcTextSize(text.c_str()).y;
-
-	ImGui::SetCursorPosX((windowWidth - textWidth) * 0.5f);
-	ImGui::SetCursorPosY((windowHeight - textHeight) * 0.5f);
-	ImGui::Text(text.c_str());
-}
-
-void TextCentered(std::string text) {
-	auto windowWidth = ImGui::GetContentRegionAvail().x;
-	auto textWidth = ImGui::CalcTextSize(text.c_str()).x;
-
-	ImGui::SetCursorPosX((windowWidth - textWidth) * 0.5f);
-	ImGui::Text(text.c_str());
-}
-
-void InfoBox(std::string info)
-{
-	ImGui::BeginTooltip();
-	ImGui::PushTextWrapPos(ImGui::GetFontSize() * 35.0f);
-	ImGui::TextUnformatted(info.c_str());
-	ImGui::PopTextWrapPos();
-	ImGui::EndTooltip();
-}
-
-bool CompareStringCaseInsensitive(const std::string& lhs, const std::string& rhs) {
-
-	std::string::size_type common_length = std::min<size_t>(lhs.length(), rhs.length());
-
-	for (std::string::size_type i = 0; i < common_length; ++i) {
-		if (toupper(lhs[i]) < toupper(rhs[i]))return true;
-		if (toupper(lhs[i]) > toupper(rhs[i]))return false;
-	}
-
-	if (lhs.length() < rhs.length())return true;
-	if (lhs.length() > rhs.length())return false;
-
-	return false;
-}
-
 void GUI()
 {
-	Globals::Gui::style = &ImGui::GetStyle();
-	Globals::Gui::style->WindowTitleAlign = ImVec2(0.5, 0.5);
-	Globals::Gui::style->WindowBorderSize = 3.0f;
-	Globals::Gui::style->WindowRounding = 8.0f;
-	Globals::Gui::style->FrameRounding = 8.0f;
-	Globals::Gui::style->ChildRounding = 8.0f;
-	Globals::Gui::style->Colors[ImGuiCol_Border] = *Globals::Gui::theme;
-	Globals::Gui::style->Colors[ImGuiCol_TitleBg] = *Globals::Gui::theme;
-	Globals::Gui::style->Colors[ImGuiCol_TitleBgActive] = *Globals::Gui::theme;
-	Globals::Gui::style->Colors[ImGuiCol_FrameBg] = ImColor(40, 40, 40);
-	Globals::Gui::style->Colors[ImGuiCol_FrameBgActive] = ImColor(40, 40, 40);
-	Globals::Gui::style->Colors[ImGuiCol_FrameBgHovered] = ImColor(40, 40, 40);
-	Globals::Gui::style->Colors[ImGuiCol_Button] = ImColor(40, 40, 40);
-	Globals::Gui::style->Colors[ImGuiCol_ButtonHovered] = ImColor(50, 50, 50);
-	Globals::Gui::style->Colors[ImGuiCol_ChildBg] = ImColor(24, 24, 24);
-	Globals::Gui::style->Colors[ImGuiCol_Separator] = ImColor(0, 0, 0, 0);
-	Globals::Gui::style->Colors[ImGuiCol_SeparatorActive] = ImColor(0, 0, 0, 0);
-	Globals::Gui::style->Colors[ImGuiCol_SeparatorHovered] = ImColor(0, 0, 0, 0);
+	MainTheme();
+
 	ImGui::SetNextWindowSize(ImVec2(1280, 720));
+	ImGui::SetNextWindowBgAlpha(1);
 	ImGui::Begin("IL2CPP Scanner Reborn", &Globals::showMenu, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
 	ImGui::BeginChild("main", ImGui::GetContentRegionAvail(), false, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
+
+	Globals::Gui::style->Colors[ImGuiCol_Border] = Theme::borderOthers_Col;
+
+	Globals::Gui::style->WindowBorderSize = 0;
+	ImGui::BeginMainMenuBar();
+	if (ImGui::Checkbox("Gui Tools", &Theme::gui_Tools));
+	ImGui::EndMainMenuBar();
+	Globals::Gui::style->WindowBorderSize = Theme::border_Size;
+
+	if (Theme::gui_Tools)
+		GuiTools();
 
 	ImGui::Columns(2, nullptr, true);
 	ImGui::SetColumnOffset(1, 400);
 
-	if (ImGui::BeginCombo("Module", SearchClass::m_Module.c_str()))
+	ImGui::Dummy(ImVec2(0, 4));
+	if (ImGui::BeginCombo("Module", SearchClass::m_Module.c_str(), ImGuiComboFlags_HeightLarge))
 	{
 		size_t m_sAssembliesCount = 0U;
 		Unity::il2cppAssembly** m_pAssemblies = IL2CPP::Domain::GetAssemblies(&m_sAssembliesCount);
@@ -116,18 +69,29 @@ void GUI()
 	ImGui::InputText("Game Object", &SearchClass::m_GameObject);
 	if (ImGui::IsItemHovered(ImGuiHoveredFlags_None))
 		InfoBox("leave blank to search all GameObjects");
-		
+
+	ImGui::Dummy(ImVec2(0, 4));
+
+	// Search buttons
+
+	PushButtonCol(ImColor(30, 80, 159), Theme::buttonSearchHovered_Col);
 	if (ImGui::Button("Search " ICON_FA_MAGNIFYING_GLASS))
 		(SearchClass::m_GameObject != "") ? GameObjectClass::GameObjectSearch() : GameObjectClass::GameObjectSearchAll();
+	PopButtonCol();
 
 	ImGui::SameLine();
+
+	PushButtonCol(ImColor(183, 64, 64), Theme::buttonSearchHovered_Col);
 	if (ImGui::Button("Clear"))
 		SearchClass::ClearAll();
+	PopButtonCol();
 
+	PushChildBgCol(Theme::childBgGameObjects_Col);
+	ImGui::BeginChild("gameobject list", ImGui::GetContentRegionAvail(), true, ImGuiWindowFlags_MenuBar);
+
+	ImGui::BeginMenuBar();
 	TextCentered("Game Objects list");
-
-	Globals::Gui::style->Colors[ImGuiCol_ChildBg] = ImColor(30, 30, 30);
-	ImGui::BeginChild("gameobject list", ImGui::GetContentRegionAvail(), false);
+	ImGui::EndMenuBar();
 
 	if (GameObjectClass::Gets().empty())
 		TextCenteredXY("Nothing to show at the moment");
@@ -155,59 +119,47 @@ void GUI()
 	}
 
 	ImGui::EndChild();
+	PopChildBgCol();
 
 	ImGui::NextColumn();
 
-	ImGui::BeginChild("components/fields/log", ImGui::GetContentRegionAvail(), false, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_MenuBar);
+	Globals::Gui::style->Colors[ImGuiCol_FrameBg] = ImColor(34, 34, 34);
+	Globals::Gui::style->Colors[ImGuiCol_FrameBgActive] = ImColor(34, 34, 34);
+	Globals::Gui::style->Colors[ImGuiCol_FrameBgHovered] = ImColor(34, 34, 34);
+	PushChildBgCol(Theme::childBgOutside_Col);
+	ImGui::BeginChild("components/fields/log", ImGui::GetContentRegionAvail(), true, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_MenuBar);
 
 	ImGui::BeginMenuBar();
 	if (Globals::Gui::window == "component")
 	{
 		if (GameObjectClass::IsValidGameObject(GameObjectClass::Get()))
 		{	
-			Globals::Gui::style->Colors[ImGuiCol_Button] = ImColor(60, 60, 60);
-			Globals::Gui::style->Colors[ImGuiCol_ButtonHovered] = ImColor(80, 80, 80);
+			PushButtonCol(Theme::buttonMenuBar_Col, Theme::buttonHoveredMenuBar_Col);
 			if (ImGui::SmallButton("Transform/Inspect"))
 			{
 				Globals::Gui::window = "transform";
 			}
-			Globals::Gui::style->Colors[ImGuiCol_Button] = ImColor(40, 40, 40);
-			Globals::Gui::style->Colors[ImGuiCol_ButtonHovered] = ImColor(50, 50, 50);
+			PopButtonCol();
 			
-			Globals::Gui::style->Colors[ImGuiCol_Text] = ImColor(0, 255, 0);
+			Globals::Gui::style->Colors[ImGuiCol_Text] = ImColor(0, 255, 0, 200);
 			std::string name = GameObjectClass::Get()->GetName()->ToString().c_str();
 			name.append(" gameobject");
 			TextCentered(name);	
-			Globals::Gui::style->Colors[ImGuiCol_Text] = ImColor(255, 255, 255);
+			Globals::Gui::style->Colors[ImGuiCol_Text] = Theme::text_Col;
 		}
-
-		ImGui::SetCursorPosX(570);
-		Globals::Gui::style->Colors[ImGuiCol_FrameBg] = ImColor(80, 80, 80);
-		Globals::Gui::style->Colors[ImGuiCol_FrameBgActive] = ImColor(80, 80, 80);
-		Globals::Gui::style->Colors[ImGuiCol_FrameBgHovered] = ImColor(80, 80, 80);
-		ImGui::PushItemWidth(230);
-		ImGui::InputText("Filter", &SearchClass::m_ComponentList);
-		if (ImGui::IsItemHovered(ImGuiHoveredFlags_None))
-			InfoBox("name must be complete, case insensitive");
-		ImGui::PopItemWidth();
-		Globals::Gui::style->Colors[ImGuiCol_FrameBg] = ImColor(40, 40, 40);
-		Globals::Gui::style->Colors[ImGuiCol_FrameBgActive] = ImColor(40, 40, 40);
-		Globals::Gui::style->Colors[ImGuiCol_FrameBgHovered] = ImColor(40, 40, 40);
 	}
 	if (Globals::Gui::window == "field")
 	{
-		Globals::Gui::style->Colors[ImGuiCol_Button] = ImColor(60, 60, 60);
-		Globals::Gui::style->Colors[ImGuiCol_ButtonHovered] = ImColor(80, 80, 80);
+		PushButtonCol(Theme::buttonMenuBar_Col, Theme::buttonHoveredMenuBar_Col);
 		if (ImGui::SmallButton("Methods Call"))
 		{
 			Globals::Gui::window = "method";
 		}
-		Globals::Gui::style->Colors[ImGuiCol_Button] = ImColor(40, 40, 40);
-		Globals::Gui::style->Colors[ImGuiCol_ButtonHovered] = ImColor(50, 50, 50);
+		PopButtonCol();
 		
 		if (ComponentClass::IsValidComponent(ComponentClass::Get()))
 		{
-			Globals::Gui::style->Colors[ImGuiCol_Text] = ImColor(0, 255, 0);
+			Globals::Gui::style->Colors[ImGuiCol_Text] = ImColor(0, 255, 0, 200);
 			std::string name = ComponentClass::Get()->m_Object.m_pClass->m_pName;
 			name.append(" fields and properties");
 
@@ -217,48 +169,43 @@ void GUI()
 				name.append(" : ").append(baseClass->m_pName);
 			}
 			TextCentered(name);
-			Globals::Gui::style->Colors[ImGuiCol_Text] = ImColor(255, 255, 255);
+			Globals::Gui::style->Colors[ImGuiCol_Text] = Theme::text_Col;
 		}
-
-		ImGui::SetCursorPosX(570);
-		Globals::Gui::style->Colors[ImGuiCol_FrameBg] = ImColor(80, 80, 80);
-		Globals::Gui::style->Colors[ImGuiCol_FrameBgActive] = ImColor(80, 80, 80);
-		Globals::Gui::style->Colors[ImGuiCol_FrameBgHovered] = ImColor(80, 80, 80);
-		ImGui::PushItemWidth(230);
-		ImGui::InputText("Filter", &SearchClass::m_FieldList);
-		if (ImGui::IsItemHovered(ImGuiHoveredFlags_None))
-			InfoBox("name must be complete, case insensitive");
-		ImGui::PopItemWidth();
-		Globals::Gui::style->Colors[ImGuiCol_FrameBg] = ImColor(40, 40, 40);
-		Globals::Gui::style->Colors[ImGuiCol_FrameBgActive] = ImColor(40, 40, 40);
-		Globals::Gui::style->Colors[ImGuiCol_FrameBgHovered] = ImColor(40, 40, 40);
 	}
 	if (Globals::Gui::window == "method")
 	{
 		if (ComponentClass::IsValidComponent(ComponentClass::Get()))
 		{
-			Globals::Gui::style->Colors[ImGuiCol_Text] = ImColor(0, 255, 0);
+			Globals::Gui::style->Colors[ImGuiCol_Text] = ImColor(0, 255, 0, 200);
 			std::string name = ComponentClass::Get()->m_Object.m_pClass->m_pName;
 			name.append(" methods calling page");
 			TextCentered(name);
-			Globals::Gui::style->Colors[ImGuiCol_Text] = ImColor(255, 255, 255);
+			Globals::Gui::style->Colors[ImGuiCol_Text] = Theme::text_Col;
 		}
 	}
 	if (Globals::Gui::window == "transform")
 	{
 		if (GameObjectClass::IsValidGameObject(GameObjectClass::Get()))
 		{
-			Globals::Gui::style->Colors[ImGuiCol_Text] = ImColor(0, 255, 0);
+			Globals::Gui::style->Colors[ImGuiCol_Text] = ImColor(0, 255, 0, 200);
 			std::string name = GameObjectClass::Get()->GetName()->ToString().c_str();
 			name.append(" transform and inspector");
 			TextCentered(name);
-			Globals::Gui::style->Colors[ImGuiCol_Text] = ImColor(255, 255, 255);
+			Globals::Gui::style->Colors[ImGuiCol_Text] = Theme::text_Col;
 		}
 	}
 	ImGui::EndMenuBar();
 
 	if (Globals::Gui::window == "component")
 	{
+		PushChildBgCol(Theme::childBgComponents_Col);
+
+		ImGui::PushItemWidth(230);
+		ImGui::InputText("Filter", &SearchClass::m_ComponentList);
+		if (ImGui::IsItemHovered(ImGuiHoveredFlags_None))
+			InfoBox("name must be complete, case insensitive");
+		ImGui::PopItemWidth();
+
 		ImGui::Columns(2, nullptr, true);
 		ImGui::SetColumnOffset(1, 570);
 	
@@ -315,10 +262,19 @@ void GUI()
 			ImGui::PopID();
 		}
 		ImGui::EndChild();
+		PopChildBgCol();
 	}
 
 	if (Globals::Gui::window == "field")
 	{
+		PushChildBgCol(Theme::childBgFields_Col);
+
+		ImGui::PushItemWidth(230);
+		ImGui::InputText("Filter", &SearchClass::m_FieldList);
+		if (ImGui::IsItemHovered(ImGuiHoveredFlags_None))
+			InfoBox("name must be complete, case insensitive");
+		ImGui::PopItemWidth();
+
 		ImGui::BeginChild("type filter", ImVec2(NULL, 38), ImGuiWindowFlags_NoMove);
 		ImGui::Checkbox("int", &Globals::showInt);
 		ImGui::SameLine(),
@@ -331,6 +287,10 @@ void GUI()
 		ImGui::Checkbox("properties", &Globals::showProperties);
 		ImGui::EndChild();
 
+		PopChildBgCol();
+
+		PushChildBgCol(Theme::childBgFields_Col);
+		ImGui::BeginChild("field container", ImGui::GetContentRegionAvail(), true);
 		// Fields
 		for (auto Field : FieldClass::Gets())
 		{
@@ -346,9 +306,9 @@ void GUI()
 
 						if (Globals::showInt)
 						{
-							Globals::Gui::style->Colors[ImGuiCol_Text] = ImColor(23, 156, 255);
+							Globals::Gui::style->Colors[ImGuiCol_Text] = ImColor(23, 156, 255, 200);
 							ImGui::Text("INT"); ImGui::SameLine();
-							Globals::Gui::style->Colors[ImGuiCol_Text] = ImColor(255, 255, 255);
+							Globals::Gui::style->Colors[ImGuiCol_Text] = Theme::text_Col;
 
 							ImGui::PushItemWidth(250);
 							if (ImGui::InputInt(Field->m_pName, &i, NULL, NULL, ImGuiInputTextFlags_EnterReturnsTrue))
@@ -365,9 +325,9 @@ void GUI()
 
 						if (Globals::showFloat)
 						{
-							Globals::Gui::style->Colors[ImGuiCol_Text] = ImColor(0, 255, 0);
+							Globals::Gui::style->Colors[ImGuiCol_Text] = ImColor(0, 255, 0, 200);
 							ImGui::Text("FLOAT"); ImGui::SameLine();
-							Globals::Gui::style->Colors[ImGuiCol_Text] = ImColor(255, 255, 255);
+							Globals::Gui::style->Colors[ImGuiCol_Text] = Theme::text_Col;
 
 							ImGui::PushItemWidth(250);
 							if (ImGui::InputFloat(Field->m_pName, &f, NULL, NULL, "%.1f", ImGuiInputTextFlags_EnterReturnsTrue))
@@ -384,9 +344,9 @@ void GUI()
 
 						if (Globals::showBool)
 						{
-							Globals::Gui::style->Colors[ImGuiCol_Text] = ImColor(255, 0, 0);
+							Globals::Gui::style->Colors[ImGuiCol_Text] = ImColor(255, 0, 0, 200);
 							ImGui::Text("BOOL"); ImGui::SameLine();
-							Globals::Gui::style->Colors[ImGuiCol_Text] = ImColor(255, 255, 255);
+							Globals::Gui::style->Colors[ImGuiCol_Text] = Theme::text_Col;
 
 							if (ImGui::Checkbox(Field->m_pName, &b))
 							{
@@ -405,9 +365,9 @@ void GUI()
 							if (strcmp(Field->m_pName, "_instance") == 0 || strcmp(Field->m_pName, "_Instance") == 0) // exclude the get instance field
 								break;
 
-							Globals::Gui::style->Colors[ImGuiCol_Text] = ImColor(167, 122, 221);
+							Globals::Gui::style->Colors[ImGuiCol_Text] = ImColor(167, 122, 221, 200);
 							ImGui::Text("CLASS"); ImGui::SameLine();
-							Globals::Gui::style->Colors[ImGuiCol_Text] = ImColor(255, 255, 255);
+							Globals::Gui::style->Colors[ImGuiCol_Text] = Theme::text_Col;
 
 							if (ImGui::Button(Field->m_pName, ImVec2(ImGui::GetContentRegionAvail().x, NULL)))
 							{
@@ -506,17 +466,62 @@ void GUI()
 				}
 			}
 		}
+
+		ImGui::EndChild();
+		PopChildBgCol();
 	}
 
 	if (Globals::Gui::window == "method")
 	{
+		PushChildBgCol(Theme::childBgMethods_Col);
+
 		// Methods
 		if (ImGui::BeginCombo("Methods", MethodArgs::MethodName.c_str()))
 		{
 			for (auto Method : MethodClass::Gets())
 			{
 				if (ImGui::Selectable(Method->m_pName))
+				{
 					MethodArgs::MethodName = Method->m_pName;
+
+					switch (Method->m_pReturnType->m_uType)
+					{
+					case Type_Void:
+						Globals::MethodRetType_Current = 0;
+						break;
+					case Type_Integer:
+						Globals::MethodRetType_Current = 1;
+						break;
+					case Type_Float:
+						Globals::MethodRetType_Current = 2;
+						break;
+					case Type_Boolean:
+						Globals::MethodRetType_Current = 3;
+						break;
+					default:
+						Globals::MethodRetType_Current = 0;
+						break;
+					}
+
+					switch (Method->m_pParameters->m_pParameterType->m_uType)
+					{
+					case Type_Integer:
+						Globals::MethodArgType_Current = 0;
+						break;
+					case Type_Float:
+						Globals::MethodArgType_Current = 1;
+						break;
+					case Type_Boolean:
+						Globals::MethodArgType_Current = 2;
+						break;
+					case Type_String:
+						Globals::MethodArgType_Current = 3;
+						break;
+					default:
+						Globals::MethodArgType_Current = 4;
+						break;
+					}
+				}
 			}
 			ImGui::EndCombo();
 		}
@@ -548,14 +553,20 @@ void GUI()
 
 		TextCentered("Log");
 		ImGui::InputTextMultiline("##", &LoggerClass::GetContent(), ImGui::GetContentRegionAvail(), ImGuiInputTextFlags_ReadOnly);
+
+		PopChildBgCol();
 	}
 
 	if (Globals::Gui::window == "transform")
 	{
+		PushChildBgCol(Theme::childBgTransform_Col);
+		PushPopupBgCol(Theme::popupBgTransform_Col, Theme::headerHoveredTransform_Col);
+
 		if (GameObjectClass::IsValidGameObject(GameObjectClass::Get()))
 		{
-			Globals::Gui::style->Colors[ImGuiCol_Text] = ImColor(0, 255, 0);
-			ImGui::Text("Game Object:"); ImGui::SameLine(), Globals::Gui::style->Colors[ImGuiCol_Text] = ImColor(255, 255, 255);
+			Globals::Gui::style->Colors[ImGuiCol_Text] = ImColor(0, 255, 0, 200);
+			ImGui::Dummy(ImVec2(0, 0)); ImGui::SameLine(0);
+			ImGui::Text("Game Object:"); ImGui::SameLine(), Globals::Gui::style->Colors[ImGuiCol_Text] = Theme::text_Col;
 			ImGui::InputText("##", new std::string (GameObjectClass::Get()->GetName()->ToString()), ImGuiInputTextFlags_ReadOnly);
 			ImGui::SameLine(),
 			Globals::Gui::style->Colors[ImGuiCol_Button] = ImColor(183, 64, 64);
@@ -564,47 +575,51 @@ void GUI()
 			{
 				GameObjectClass::Get()->Destroy();
 			}
-			Globals::Gui::style->Colors[ImGuiCol_Button] = ImColor(40, 40, 40);
-			Globals::Gui::style->Colors[ImGuiCol_ButtonHovered] = ImColor(50, 50, 50);
+			Globals::Gui::style->Colors[ImGuiCol_Button] = Theme::button_Col;
+			Globals::Gui::style->Colors[ImGuiCol_ButtonHovered] = Theme::buttonHovered_Col;
 			ImGui::SameLine();
 			if (ImGui::Checkbox("Is Active", new bool(GameObjectClass::Get()->GetActive())))
 			{
 				((GameObjectClass::Get()->GetActive())) ? GameObjectClass::Get()->SetActive(false) : GameObjectClass::Get()->SetActive(true);
 			}
 
-			ImGui::PushItemWidth(ImGui::GetContentRegionAvail().x - 38);
+			ImGui::PushItemWidth(ImGui::GetContentRegionAvail().x - 48);
+			ImGui::Dummy(ImVec2(0, 0)); ImGui::SameLine(0);
 			ImGui::InputText("path", &ChildClass::GetChildrenPath(), ImGuiInputTextFlags_ReadOnly);
 			ImGui::PopItemWidth();
 
-			Globals::Gui::style->Colors[ImGuiCol_Separator] = ImColor(60, 60, 60, 255);
+			Globals::Gui::style->Colors[ImGuiCol_Separator] = ImColor(60, 60, 60, 230);
 			ImGui::Separator();
 			Globals::Gui::style->Colors[ImGuiCol_Separator] = ImColor(0, 0, 0, 0);
 			
 			Unity::Vector3 position = GameObjectClass::Get()->GetTransform()->GetPosition();
-			if (ImGui::InputFloat3("Position", (float*)&position, "%.2f", ImGuiInputTextFlags_EnterReturnsTrue))
+			ImGui::Dummy(ImVec2(0, 0)); ImGui::SameLine(0);
+			if (ImGui::MyInputFloat3("Position", ICON_FA_X, ICON_FA_Y, ICON_FA_Z, ImColor(255, 0, 0, 200), ImColor(0, 255, 0, 200), ImColor(23, 156, 255, 200), (float*)&position, "%.2f", ImGuiInputTextFlags_EnterReturnsTrue))
 			{
 				GameObjectClass::Get()->GetTransform()->SetPosition(position);
 			}
 
 			Unity::Vector3 localposition = GameObjectClass::Get()->GetTransform()->GetLocalPosition();
-			if (ImGui::InputFloat3("Local position", (float*)&localposition, "%.2f", ImGuiInputTextFlags_EnterReturnsTrue))
+			ImGui::Dummy(ImVec2(0, 0)); ImGui::SameLine(0);
+			if (ImGui::MyInputFloat3("Local position", ICON_FA_X, ICON_FA_Y, ICON_FA_Z, ImColor(255, 0, 0, 200), ImColor(0, 255, 0, 200), ImColor(23, 156, 255, 200), (float*)&localposition, "%.2f", ImGuiInputTextFlags_EnterReturnsTrue))
 			{
 				GameObjectClass::Get()->GetTransform()->SetLocalPosition(localposition);
 			}
 
 			Unity::Vector3 scale = GameObjectClass::Get()->GetTransform()->GetLocalScale();
-			if (ImGui::InputFloat3("Local scale", (float*)&scale, "%.2f", ImGuiInputTextFlags_EnterReturnsTrue))
+			ImGui::Dummy(ImVec2(0, 0)); ImGui::SameLine(0);
+			if (ImGui::MyInputFloat3("Local scale", ICON_FA_X, ICON_FA_Y, ICON_FA_Z, ImColor(255, 0, 0, 200), ImColor(0, 255, 0, 200), ImColor(23, 156, 255, 200), (float*)&scale, "%.2f", ImGuiInputTextFlags_EnterReturnsTrue))
 			{
 				GameObjectClass::Get()->GetTransform()->SetLocalScale(scale);
 			}
 
 			Unity::Quaternion rotation = GameObjectClass::Get()->GetTransform()->GetRotation();
-			if (ImGui::InputFloat4("Rotation", (float*)&rotation, "%.2f", ImGuiInputTextFlags_EnterReturnsTrue))
+			ImGui::Dummy(ImVec2(0, 0)); ImGui::SameLine(0);
+			ImGui::SetNextItemWidth(738);
+			if (ImGui::MyInputFloat4("Rot.", ICON_FA_X, ICON_FA_Y, ICON_FA_Z, ICON_FA_W, ImColor(255, 0, 0, 200), ImColor(0, 255, 0, 200), ImColor(23, 156, 255, 200), ImColor(255, 0, 255, 200), (float*)&rotation, "%.2f", ImGuiInputTextFlags_EnterReturnsTrue))
 			{
 				GameObjectClass::Get()->GetTransform()->SetRotation(rotation);
 			}
-
-			ImGui::Separator();
 
 			ImGui::Columns(2, nullptr, true);
 			ImGui::SetColumnOffset(1, 420);
@@ -614,6 +629,7 @@ void GUI()
 			ImGui::BeginMenuBar();
 			if (ChildClass::GetParents().size() > 0)
 			{
+				PushButtonCol(ImColor(60, 60, 60), ImColor(80, 80, 80));
 				if (ImGui::SmallButton(ICON_FA_ARROW_LEFT))
 				{
 					GameObjectClass::Set(ChildClass::GetParents().back());
@@ -623,6 +639,7 @@ void GUI()
 					ChildClass::PopParentPath();
 					ChildClass::PopParent();
 				}
+				PopButtonCol();
 			}
 			TextCentered("Children Gameobjects");
 			ImGui::EndMenuBar();
@@ -631,10 +648,40 @@ void GUI()
 			{
 				ImGui::PushID(child);
 				bool onoff = child->GetActive();
-				if (strcmp(child->m_Object.m_pClass->m_pName, "GameObject") != 0) { onoff = false; } // make sure it's a gameobject
+				if (!GameObjectClass::IsValidGameObject(child))
+					onoff = false;
+
 				ImGui::Checkbox("##", &onoff);
 				ImGui::SameLine();
-				ImGui::Text(child->GetName()->ToString().c_str());
+				if (ImGui::BeginMenu(child->GetName()->ToString().c_str(), onoff))
+				{
+					ChildClass::SubChildrenSearchAll(child);
+
+					for (auto subchild : ChildClass::GetsSubChildren())
+					{
+						if (GameObjectClass::IsValidGameObject(subchild))
+						{
+							ImGui::Selectable(subchild->GetName()->ToString().c_str());
+							if (ImGui::IsItemHovered(ImGuiHoveredFlags_None))
+							{
+								ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
+								if (ImGui::IsItemClicked(ImGuiMouseButton_Left))
+								{
+									ChildClass::PushParentPath(child->GetName()->ToString());
+									ChildClass::PushParentPath(subchild->GetName()->ToString());
+									ChildClass::PushParent(GameObjectClass::Get());
+									ChildClass::PushParent(child);
+									GameObjectClass::Set(subchild);
+									ComponentClass::ComponentSearchAll();
+									ChildClass::ChildrenSearchAll();
+									SearchClass::m_ComponentList.clear();
+								}
+							}
+						}
+					}
+					ImGui::EndMenu();
+				}
+
 				if (ImGui::IsItemHovered(ImGuiHoveredFlags_None))
 				{
 					if (onoff)
@@ -651,6 +698,11 @@ void GUI()
 						}
 					}
 				}
+
+				Globals::Gui::style->Colors[ImGuiCol_Separator] = ImColor(60, 60, 60, 230);
+				ImGui::Separator();
+				Globals::Gui::style->Colors[ImGuiCol_Separator] = ImColor(0, 0, 0, 0);
+				
 				ImGui::PopID();
 			}
 		}
@@ -685,6 +737,8 @@ void GUI()
 			
 		}
 		ImGui::EndChild();
+		PopChildBgCol();
+		PopPopupBgCol();
 	}
 
 	if (Globals::Gui::window == "log")
@@ -693,6 +747,7 @@ void GUI()
 		ImGui::InputTextMultiline("##", &LoggerClass::GetContent(), ImGui::GetContentRegionAvail(), ImGuiInputTextFlags_ReadOnly);
 	}
 	ImGui::EndChild();
+	PopChildBgCol();
 
 	ImGui::EndChild();
 	ImGui::End();
