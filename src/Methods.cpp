@@ -90,7 +90,7 @@ void OnUpdate()
 					case ArgType::noArg:
 					{
 						try {
-							ComponentClass::Get()->CallMethodSafe<int>(MethodArgs::MethodName.c_str());
+							MethodArgs::RetInt = ComponentClass::Get()->CallMethodSafe<int>(MethodArgs::MethodName.c_str());
 						}
 						catch (...)
 						{
@@ -101,7 +101,7 @@ void OnUpdate()
 					case ArgType::inT:
 					{
 						try {
-							ComponentClass::Get()->CallMethodSafe<int, int>(MethodArgs::MethodName.c_str(), MethodArgs::MethodInt);
+							MethodArgs::RetInt = ComponentClass::Get()->CallMethodSafe<int, int>(MethodArgs::MethodName.c_str(), MethodArgs::MethodInt);
 						}
 						catch (...)
 						{
@@ -113,7 +113,7 @@ void OnUpdate()
 					case ArgType::floaT:
 					{
 						try {
-							ComponentClass::Get()->CallMethodSafe<int, float>(MethodArgs::MethodName.c_str(), MethodArgs::MethodFloat);
+							MethodArgs::RetInt = ComponentClass::Get()->CallMethodSafe<int, float>(MethodArgs::MethodName.c_str(), MethodArgs::MethodFloat);
 						}
 						catch (...)
 						{
@@ -125,7 +125,7 @@ void OnUpdate()
 					case ArgType::booL:
 					{
 						try {
-							ComponentClass::Get()->CallMethodSafe<int, bool>(MethodArgs::MethodName.c_str(), MethodArgs::MethodBool);
+							MethodArgs::RetInt = ComponentClass::Get()->CallMethodSafe<int, bool>(MethodArgs::MethodName.c_str(), MethodArgs::MethodBool);
 						}
 						catch (...)
 						{
@@ -137,7 +137,7 @@ void OnUpdate()
 					case ArgType::strinG:
 					{
 						try {
-							ComponentClass::Get()->CallMethodSafe<int, Unity::System_String*>(MethodArgs::MethodName.c_str(), IL2CPP::String::New(MethodArgs::MethodString));
+							MethodArgs::RetInt = ComponentClass::Get()->CallMethodSafe<int, Unity::System_String*>(MethodArgs::MethodName.c_str(), IL2CPP::String::New(MethodArgs::MethodString));
 						}
 						catch (...)
 						{
@@ -156,7 +156,7 @@ void OnUpdate()
 					case ArgType::noArg:
 					{
 						try {
-							ComponentClass::Get()->CallMethodSafe<float>(MethodArgs::MethodName.c_str());
+							MethodArgs::RetFloat = ComponentClass::Get()->CallMethodSafe<float>(MethodArgs::MethodName.c_str());
 						}
 						catch (...)
 						{
@@ -168,7 +168,7 @@ void OnUpdate()
 					case ArgType::inT:
 					{
 						try {
-							ComponentClass::Get()->CallMethodSafe<float, int>(MethodArgs::MethodName.c_str(), MethodArgs::MethodInt);
+							MethodArgs::RetFloat = ComponentClass::Get()->CallMethodSafe<float, int>(MethodArgs::MethodName.c_str(), MethodArgs::MethodInt);
 						}
 						catch (...)
 						{
@@ -180,7 +180,7 @@ void OnUpdate()
 					case ArgType::floaT:
 					{
 						try {
-							ComponentClass::Get()->CallMethodSafe<float, float>(MethodArgs::MethodName.c_str(), MethodArgs::MethodFloat);
+							MethodArgs::RetFloat = ComponentClass::Get()->CallMethodSafe<float, float>(MethodArgs::MethodName.c_str(), MethodArgs::MethodFloat);
 						}
 						catch (...)
 						{
@@ -192,7 +192,7 @@ void OnUpdate()
 					case ArgType::booL:
 					{
 						try {
-							ComponentClass::Get()->CallMethodSafe<float, bool>(MethodArgs::MethodName.c_str(), MethodArgs::MethodBool);
+							MethodArgs::RetFloat = ComponentClass::Get()->CallMethodSafe<float, bool>(MethodArgs::MethodName.c_str(), MethodArgs::MethodBool);
 						}
 						catch (...)
 						{
@@ -204,7 +204,7 @@ void OnUpdate()
 					case ArgType::strinG:
 					{
 						try {
-							ComponentClass::Get()->CallMethodSafe<float, Unity::System_String*>(MethodArgs::MethodName.c_str(), IL2CPP::String::New(MethodArgs::MethodString));
+							MethodArgs::RetFloat = ComponentClass::Get()->CallMethodSafe<float, Unity::System_String*>(MethodArgs::MethodName.c_str(), IL2CPP::String::New(MethodArgs::MethodString));
 						}
 						catch (...)
 						{
@@ -223,7 +223,7 @@ void OnUpdate()
 					case ArgType::noArg:
 					{
 						try {
-							ComponentClass::Get()->CallMethodSafe<bool>(MethodArgs::MethodName.c_str());
+							MethodArgs::RetBool = ComponentClass::Get()->CallMethodSafe<bool>(MethodArgs::MethodName.c_str());
 						}
 						catch (...)
 						{
@@ -235,7 +235,7 @@ void OnUpdate()
 					case ArgType::inT:
 					{
 						try {
-							ComponentClass::Get()->CallMethodSafe<bool, int>(MethodArgs::MethodName.c_str(), MethodArgs::MethodInt);
+							MethodArgs::RetBool = ComponentClass::Get()->CallMethodSafe<bool, int>(MethodArgs::MethodName.c_str(), MethodArgs::MethodInt);
 						}
 						catch (...)
 						{
@@ -247,7 +247,7 @@ void OnUpdate()
 					case ArgType::floaT:
 					{
 						try {
-							ComponentClass::Get()->CallMethodSafe<bool, float>(MethodArgs::MethodName.c_str(), MethodArgs::MethodFloat);
+							MethodArgs::RetBool = ComponentClass::Get()->CallMethodSafe<bool, float>(MethodArgs::MethodName.c_str(), MethodArgs::MethodFloat);
 						}
 						catch (...)
 						{
@@ -259,7 +259,7 @@ void OnUpdate()
 					case ArgType::booL:
 					{
 						try {
-							ComponentClass::Get()->CallMethodSafe<bool, bool>(MethodArgs::MethodName.c_str(), MethodArgs::MethodBool);
+							MethodArgs::RetBool = ComponentClass::Get()->CallMethodSafe<bool, bool>(MethodArgs::MethodName.c_str(), MethodArgs::MethodBool);
 						}
 						catch (...)
 						{
@@ -271,7 +271,7 @@ void OnUpdate()
 					case ArgType::strinG:
 					{
 						try {
-							ComponentClass::Get()->CallMethodSafe<bool, Unity::System_String*>(MethodArgs::MethodName.c_str(), IL2CPP::String::New(MethodArgs::MethodString));
+							MethodArgs::RetBool = ComponentClass::Get()->CallMethodSafe<bool, Unity::System_String*>(MethodArgs::MethodName.c_str(), IL2CPP::String::New(MethodArgs::MethodString));
 						}
 						catch (...)
 						{
