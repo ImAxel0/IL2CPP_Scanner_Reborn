@@ -27,7 +27,7 @@ namespace Theme
 	inline ImColor childBgGameObjects_Col = ImColor(24, 24, 24);
 	inline ImColor childBgComponents_Col = ImColor(24, 24, 24);
 	inline ImColor childBgFields_Col = ImColor(24, 24, 24);
-	inline ImColor childBgMethods_Col = ImColor(24, 24, 24);
+	inline ImColor childBgMethods_Col = ImColor(75, 75, 75);
 	inline ImColor childBgTransform_Col = ImColor(24, 24, 24);
 	inline ImColor separator_Col = ImColor(0, 0, 0, 0);
 	inline ImColor popupBg_Col = ImColor(16, 16, 16);
@@ -98,6 +98,20 @@ inline void PopPopupBgCol()
 	Globals::Gui::style->Colors[ImGuiCol_HeaderHovered] = Theme::headerHovered_Col;
 }
 
+inline void PushFrameBgCol(ImColor color)
+{
+	Globals::Gui::style->Colors[ImGuiCol_FrameBg] = color;
+	Globals::Gui::style->Colors[ImGuiCol_FrameBgHovered] = color;
+	Globals::Gui::style->Colors[ImGuiCol_FrameBgActive] = color;
+}
+
+inline void PopFrameBgCol()
+{
+	Globals::Gui::style->Colors[ImGuiCol_FrameBg] = Theme::frame_Col;
+	Globals::Gui::style->Colors[ImGuiCol_FrameBgHovered] = Theme::frame_Col;
+	Globals::Gui::style->Colors[ImGuiCol_FrameBgActive] = Theme::frame_Col;
+}
+
 inline void TextCol(const char* txt, ImColor color)
 {
 	Globals::Gui::style->Colors[ImGuiCol_Text] = color;
@@ -118,7 +132,7 @@ inline void TextCenteredXY(std::string text) {
 }
 
 inline void TextCentered(std::string text) {
-	auto windowWidth = ImGui::GetContentRegionAvail().x;
+	auto windowWidth = ImGui::GetWindowContentRegionWidth();
 	auto textWidth = ImGui::CalcTextSize(text.c_str()).x;
 
 	ImGui::SetCursorPosX((windowWidth - textWidth) * 0.5f);

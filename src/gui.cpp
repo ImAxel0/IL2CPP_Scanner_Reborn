@@ -14,6 +14,7 @@
 #include <iostream>
 #include <algorithm>
 #include <cctype>
+#include <future>
 
 using namespace Unity;
 
@@ -85,6 +86,8 @@ void GUI()
 	if (ImGui::Button("Clear"))
 		SearchClass::ClearAll();
 	PopButtonCol();
+
+	ImGui::Dummy(ImVec2(0, 4));
 
 	PushChildBgCol(Theme::childBgGameObjects_Col);
 	ImGui::BeginChild("gameobject list", ImGui::GetContentRegionAvail(), true, ImGuiWindowFlags_MenuBar);
@@ -174,6 +177,11 @@ void GUI()
 	}
 	if (Globals::Gui::window == "method")
 	{
+		PushFrameBgCol(ImColor(53, 53, 53));
+		if (ImGui::RadioButton("Auto mode (unreliable)", Globals::MethodAutoMode))
+			Globals::MethodAutoMode = !Globals::MethodAutoMode;
+		PopFrameBgCol();
+
 		if (ComponentClass::IsValidComponent(ComponentClass::Get()))
 		{
 			Globals::Gui::style->Colors[ImGuiCol_Text] = ImColor(0, 255, 0, 200);
@@ -202,6 +210,7 @@ void GUI()
 
 		ImGui::PushItemWidth(230);
 		ImGui::InputText("Filter", &SearchClass::m_ComponentList);
+		auto v = ImGui::GetItemRectSize().y;
 		if (ImGui::IsItemHovered(ImGuiHoveredFlags_None))
 			InfoBox("name must be complete, case insensitive");
 		ImGui::PopItemWidth();
@@ -232,6 +241,7 @@ void GUI()
 					FieldClass::FieldSearchAll();
 					PropertyClass::PropertySearchAll();
 					MethodClass::MethodSearchAll();
+					MethodClass::ClearContainers(); MethodClass::m_InitContainers = false;
 					SearchClass::m_FieldList.clear();
 					Globals::Gui::window = "field";
 				}		
@@ -245,8 +255,7 @@ void GUI()
 		TextCentered("Namespace");
 		ImGui::EndMenuBar();
 
-		ImGui::PushItemWidth(ImGui::GetContentRegionAvail().x);
-		ImGui::InputText("##dummyspace", new std::string(""), ImGuiInputTextFlags_ReadOnly);
+		ImGui::Dummy(ImVec2(0, v)); // first namespace space
 
 		for (auto Component : ComponentClass::Gets())
 		{
@@ -257,7 +266,9 @@ void GUI()
 			if (boost::iequals(SearchClass::m_ComponentList, Component->m_Object.m_pClass->m_pName) || SearchClass::m_ComponentList.empty())
 			{
 				ImGui::PushItemWidth(ImGui::GetContentRegionAvail().x);
+				ImGui::BeginDisabled();
 				ImGui::InputText("##", new std::string(Component->m_Object.m_pClass->m_pNamespace), ImGuiInputTextFlags_ReadOnly);
+				ImGui::EndDisabled();
 			}
 			ImGui::PopID();
 		}
@@ -473,87 +484,211 @@ void GUI()
 
 	if (Globals::Gui::window == "method")
 	{
-		PushChildBgCol(Theme::childBgMethods_Col);
+		(!Globals::MethodAutoMode) ? PushChildBgCol(Theme::childBgMethods_Col) : PushChildBgCol(ImColor(46, 46, 46));
+		ImGui::BeginChild("method container", ImGui::GetContentRegionAvail());
 
-		// Methods
-		if (ImGui::BeginCombo("Methods", MethodArgs::MethodName.c_str()))
+		if (!Globals::MethodAutoMode)
 		{
-			for (auto Method : MethodClass::Gets())
+			// Methods
+			if (ImGui::BeginCombo("Methods", MethodArgs::MethodName.c_str()))
 			{
-				if (ImGui::Selectable(Method->m_pName))
+				for (auto Method : MethodClass::Gets())
 				{
-					MethodArgs::MethodName = Method->m_pName;
-
-					switch (Method->m_pReturnType->m_uType)
+					if (ImGui::Selectable(Method->m_pName))
 					{
-					case Type_Void:
-						Globals::MethodRetType_Current = 0;
-						break;
-					case Type_Integer:
-						Globals::MethodRetType_Current = 1;
-						break;
-					case Type_Float:
-						Globals::MethodRetType_Current = 2;
-						break;
-					case Type_Boolean:
-						Globals::MethodRetType_Current = 3;
-						break;
-					default:
-						Globals::MethodRetType_Current = 0;
-						break;
-					}
-
-					switch (Method->m_pParameters->m_pParameterType->m_uType)
-					{
-					case Type_Integer:
-						Globals::MethodArgType_Current = 0;
-						break;
-					case Type_Float:
-						Globals::MethodArgType_Current = 1;
-						break;
-					case Type_Boolean:
-						Globals::MethodArgType_Current = 2;
-						break;
-					case Type_String:
-						Globals::MethodArgType_Current = 3;
-						break;
-					default:
-						Globals::MethodArgType_Current = 4;
-						break;
+						MethodArgs::MethodName = Method->m_pName;
+						Globals::MethodRetType_Current = MethodClass::GetMethodRetType(Method);
+						Globals::MethodArgType_Current = MethodClass::GetMethodArgType(Method);
 					}
 				}
+				ImGui::EndCombo();
 			}
-			ImGui::EndCombo();
+
+			ImGui::InputText("Method name", &MethodArgs::MethodName);
+			ImGui::Combo("Return type", &Globals::MethodRetType_Current, Globals::MethodRetType, 4);
+			ImGui::Combo("Argument type", &Globals::MethodArgType_Current, Globals::MethodArgType, 5);
+
+			switch (Globals::MethodArgType_Current)
+			{
+			case ArgType::inT:
+				ImGui::InputInt("Int value", &MethodArgs::MethodInt, NULL, NULL);
+				break;
+			case ArgType::floaT:
+				ImGui::InputFloat("Float value", &MethodArgs::MethodFloat, NULL, NULL, "%.1f");
+				break;
+			case ArgType::booL:
+				ImGui::Checkbox("True or False?", &MethodArgs::MethodBool);
+				break;
+			case ArgType::strinG:
+				ImGui::InputText("String", &MethodArgs::MethodString);
+				break;
+			}
+
+			switch (Globals::MethodRetType_Current)
+			{
+			case RetType::Void:
+				break;
+			case RetType::Int:
+				ImGui::BeginDisabled();
+				ImGui::InputInt("Return value", &MethodArgs::RetInt, NULL, NULL, ImGuiInputTextFlags_ReadOnly);
+				ImGui::EndDisabled();
+				break;
+			case RetType::Float:
+				ImGui::BeginDisabled();
+				ImGui::InputFloat("Return value", &MethodArgs::RetFloat, NULL, NULL, "%.1f", ImGuiInputTextFlags_ReadOnly);
+				ImGui::EndDisabled();
+				break;
+			case RetType::Bool:
+				ImGui::BeginDisabled();
+				ImGui::Checkbox("Return value", &MethodArgs::RetBool);
+				ImGui::EndDisabled();
+				break;
+			}
+
+			if (ImGui::Button("Call Method"))
+			{
+				Globals::callMethod = true;
+			}
+
+			TextCentered("Log");
+			ImGui::InputTextMultiline("##", &LoggerClass::GetContent(), ImGui::GetContentRegionAvail(), ImGuiInputTextFlags_ReadOnly);
 		}
 
-		ImGui::InputText("Method name", &MethodArgs::MethodName);
-		ImGui::Combo("Return type", &Globals::MethodRetType_Current, Globals::MethodRetType, 4);
-		ImGui::Combo("Argument type", &Globals::MethodArgType_Current, Globals::MethodArgType, 5);
-
-		switch (Globals::MethodArgType_Current)
+		if (Globals::MethodAutoMode)
 		{
-		case ArgType::inT:
-			ImGui::InputInt("Int value", &MethodArgs::MethodInt, NULL, NULL);
-			break;
-		case ArgType::floaT:
-			ImGui::InputFloat("Float value", &MethodArgs::MethodFloat, NULL, NULL, "%.1f");
-			break;
-		case ArgType::booL:
-			ImGui::Checkbox("True or False?", &MethodArgs::MethodBool);
-			break;
-		case ArgType::strinG:
-			ImGui::InputText("String", &MethodArgs::MethodString);
-			break;
+			if (!MethodClass::m_InitContainers)
+			{
+				MethodClass::ClearContainers();
+				MethodArgs::MethodIntegers.resize(1000);
+				MethodArgs::MethodFloats.resize(1000);
+				MethodArgs::MethodBooleans.resize(1000);
+				MethodArgs::MethodStrings.resize(1000);
+				MethodArgs::RetIntegers.resize(1000);
+				MethodArgs::RetFloats.resize(1000);
+				MethodArgs::RetBooleans.resize(1000);
+				MethodClass::m_InitContainers = true;
+			}
+
+			auto dummyhspace = (ImGui::GetContentRegionAvail().x - ImGui::GetContentRegionAvail().x + 4);
+			for (uintptr_t u{}; u < MethodClass::Gets().size(); ++u)
+			{
+				ImGui::PushID(u);
+				ImGui::Dummy(ImVec2(0, 1));
+				ImGui::SetCursorPosX(dummyhspace);
+				TextCol(MethodClass::Gets().at(u)->m_pName, ImColor(244, 202, 33)); ImGui::SameLine(); TextCol(MethodClass::GetMethodRetTypeAsText(MethodClass::Gets().at(u)), ImColor(23, 156, 255, 200));
+				ImGui::Dummy(ImVec2(0, 4));
+				bool unsupported = false;
+
+				switch (MethodClass::Gets().at(u)->m_pParameters->m_pParameterType->m_uType)
+				{
+				case Type_Integer:
+					ImGui::SetCursorPosX(dummyhspace);
+					ImGui::InputInt("Int value", &MethodArgs::MethodIntegers.at(u), NULL, NULL);
+					break;
+				case Type_Float:
+					ImGui::SetCursorPosX(dummyhspace);
+					ImGui::InputFloat("Float value", &MethodArgs::MethodFloats.at(u), NULL, NULL, "%.1f");
+					break;
+				case Type_Boolean:
+					ImGui::SetCursorPosX(dummyhspace);
+					ImGui::Checkbox("True or False?", (bool*)&MethodArgs::MethodBooleans.at(u));
+					break;
+				case Type_String:
+					ImGui::SetCursorPosX(dummyhspace);
+					ImGui::InputText("String", &MethodArgs::MethodStrings.at(u));
+					break;
+				default:
+					unsupported = true;
+					ImGui::SetCursorPosX(dummyhspace);
+					ImGui::BeginDisabled();
+					ImGui::InputText("Unsupported argument type", new std::string(""), ImGuiInputTextFlags_ReadOnly);
+					ImGui::EndDisabled();
+					break;
+				}
+
+				switch (MethodClass::Gets().at(u)->m_pReturnType->m_uType)
+				{
+				case Type_Void:
+					break;
+				case Type_Integer:
+					ImGui::BeginDisabled();
+					ImGui::SetCursorPosX(dummyhspace);
+					ImGui::InputInt("Return value", &MethodArgs::RetIntegers.at(u), NULL, NULL, ImGuiInputTextFlags_ReadOnly);
+					ImGui::EndDisabled();
+					break;
+				case Type_Float:
+					ImGui::BeginDisabled();
+					ImGui::SetCursorPosX(dummyhspace);
+					ImGui::InputFloat("Return value", &MethodArgs::RetFloats.at(u), NULL, NULL, "%.1f", ImGuiInputTextFlags_ReadOnly);
+					ImGui::EndDisabled();
+					break;
+				case Type_Boolean:
+					ImGui::BeginDisabled();
+					ImGui::SetCursorPosX(dummyhspace);
+					ImGui::Checkbox("Return value", (bool*)&MethodArgs::RetBooleans.at(u));
+					ImGui::EndDisabled();
+					break;
+				default:
+					unsupported = true;
+					break;
+				}
+
+				ImGui::Dummy(ImVec2(0, 2));
+				PushButtonCol(ImColor(30, 30, 30), Theme::buttonHovered_Col);
+				if (unsupported) { ImGui::BeginDisabled(); }
+				ImGui::SetCursorPosX(dummyhspace);
+				if (ImGui::Button("Call Method"))
+				{
+					MethodArgs::MethodName = MethodClass::Gets().at(u)->m_pName;
+					Globals::MethodRetType_Current = MethodClass::GetMethodRetType(MethodClass::Gets().at(u));
+					Globals::MethodArgType_Current = MethodClass::GetMethodArgType(MethodClass::Gets().at(u));
+					switch (Globals::MethodArgType_Current)
+					{
+					case ArgType::inT:
+						MethodArgs::MethodInt = MethodArgs::MethodIntegers.at(u);
+						break;
+					case ArgType::floaT:
+						MethodArgs::MethodFloat = MethodArgs::MethodFloats.at(u);
+						break;
+					case ArgType::booL:
+						MethodArgs::MethodBool = MethodArgs::MethodBooleans.at(u);
+						break;
+					case ArgType::strinG:
+						MethodArgs::MethodString = MethodArgs::MethodStrings.at(u);
+						break;
+					}
+
+					Globals::callMethod = true;
+					OnUpdate(); // just to force it to happen immediately so the the return value is in sync
+
+					switch (Globals::MethodRetType_Current)
+					{
+					case RetType::Void:
+						break;
+					case RetType::Int:
+						MethodArgs::RetIntegers.at(u) = MethodArgs::RetInt;
+						break;
+					case RetType::Float:
+						MethodArgs::RetFloats.at(u) = MethodArgs::RetFloat;
+						break;
+					case RetType::Bool:
+						MethodArgs::RetBooleans.at(u) = MethodArgs::RetBool;
+						break;
+					}
+					
+				}
+				if (unsupported) { ImGui::EndDisabled(); }
+				PopButtonCol();
+
+				ImGui::PopID();
+
+				Globals::Gui::style->Colors[ImGuiCol_Separator] = ImColor(80, 80, 80, 255);
+				ImGui::Separator();
+				Globals::Gui::style->Colors[ImGuiCol_Separator] = ImColor(0, 0, 0, 0);
+			}
 		}
 
-		if (ImGui::Button("Call Method"))
-		{
-			Globals::callMethod = true;
-		}
-
-		TextCentered("Log");
-		ImGui::InputTextMultiline("##", &LoggerClass::GetContent(), ImGui::GetContentRegionAvail(), ImGuiInputTextFlags_ReadOnly);
-
+		ImGui::EndChild();
 		PopChildBgCol();
 	}
 
@@ -569,14 +704,12 @@ void GUI()
 			ImGui::Text("Game Object:"); ImGui::SameLine(), Globals::Gui::style->Colors[ImGuiCol_Text] = Theme::text_Col;
 			ImGui::InputText("##", new std::string (GameObjectClass::Get()->GetName()->ToString()), ImGuiInputTextFlags_ReadOnly);
 			ImGui::SameLine(),
-			Globals::Gui::style->Colors[ImGuiCol_Button] = ImColor(183, 64, 64);
-			Globals::Gui::style->Colors[ImGuiCol_ButtonHovered] = ImColor(193, 74, 74);
+			PushButtonCol(ImColor(183, 64, 64), ImColor(193, 74, 74));
 			if (ImGui::Button("Destroy"))
 			{
 				GameObjectClass::Get()->Destroy();
 			}
-			Globals::Gui::style->Colors[ImGuiCol_Button] = Theme::button_Col;
-			Globals::Gui::style->Colors[ImGuiCol_ButtonHovered] = Theme::buttonHovered_Col;
+			PopButtonCol();
 			ImGui::SameLine();
 			if (ImGui::Checkbox("Is Active", new bool(GameObjectClass::Get()->GetActive())))
 			{

@@ -16,6 +16,7 @@ namespace Globals
 	inline int MethodRetType_Current = 0;
 	inline const char* MethodArgType[] = { "int", "float", "bool", "string", "no argument"};
 	inline int MethodArgType_Current = 0;
+	inline bool MethodAutoMode = true;
 
 	inline bool showInt = true;
 	inline bool showFloat = true;
